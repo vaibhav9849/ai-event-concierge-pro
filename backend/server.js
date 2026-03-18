@@ -15,21 +15,21 @@ mongoose.connect(process.env.MONGO_URI)
   .catch(err=>console.error(err));
 
 async function callLLM(query) {
-  const prompt = `Convert into strict JSON:
+  const prompt = `Convert into JSON:
   ${query}
-  Return:
+  Return format:
   {
     "venue_name": "",
     "location": "",
     "estimated_cost": "",
     "why_it_fits": ""
-  }`;
+  } dont return any other code stub etc just a json object with above format`;
 
   try {
     const res = await axios.post(
       "https://api.groq.com/openai/v1/chat/completions",
       {
-        model: "llama3-70b-8192",
+        model: "llama-3.1-8b-instant",
         messages: [{ role: "user", content: prompt }]
       },
       {
