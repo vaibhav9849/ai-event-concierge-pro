@@ -1,6 +1,7 @@
 
 import React, {useEffect, useState} from "react";
 import axios from "axios";
+import "./App.css";
 
 export default function App(){
   const [query,setQuery] = useState("");
@@ -27,30 +28,40 @@ export default function App(){
   };
 
   const Card = ({data})=>(
-    <div style={{border:"1px solid #ddd", padding:15, margin:10}}>
-      <b>Venue:</b> {data.venue_name}<br/>
-      <b>Location:</b> {data.location}<br/>
-      <b>Cost:</b> {data.estimated_cost}<br/>
-      <b>Why:</b> {data.why_it_fits}
+    <div className="card">
+      <div><b>Venue:</b> {data.venue_name}</div>
+      <div><b>Location:</b> {data.location}</div>
+      <div><b>Cost:</b> {data.estimated_cost}</div>
+      <div><b>Why:</b> {data.why_it_fits}</div>
     </div>
   );
 
   return (
-    <div style={{padding:20}}>
+    <div className="app-container">
       <h2>AI Event Concierge</h2>
 
-      <input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Describe event..." style={{width:"60%"}}/>
-      <button onClick={submit}>Generate</button>
+      <div className="search-box">
+        <input 
+          value={query} 
+          onChange={e=>setQuery(e.target.value)} 
+          placeholder="Describe your dream event..." 
+        />
+        <button onClick={submit}>Generate</button>
+      </div>
 
-      {loading && <p>⏳ AI is planning...</p>}
+      {loading && <p className="loading">⏳ AI is crafting your experience...</p>}
 
-      <h3>Result</h3>
-      {result && <Card data={result}/>}
+      {result && (
+        <>
+          <h3>Latest Match</h3>
+          <Card data={result}/>
+        </>
+      )}
 
-      <h3>History</h3>
+      {history.length > 0 && <h3>Previous Ideas</h3>}
       {history.map((item,i)=>(
-        <div key={i}>
-          <div><b>Query:</b> {item.query}</div>
+        <div key={i} className="history-item">
+          <div className="history-query"><b>Query:</b> {item.query}</div>
           <Card data={item.response}/>
         </div>
       ))}
