@@ -14,7 +14,7 @@ mongoose.connect(process.env.MONGO_URI)
   .then(()=>console.log("MongoDB Connected"))
   .catch(err=>console.error(err));
 
-async function callLLM(query){
+async function callLLM(query) {
   const prompt = `Convert into strict JSON:
   ${query}
   Return:
@@ -25,18 +25,33 @@ async function callLLM(query){
     "why_it_fits": ""
   }`;
 
-  const res = await axios.post("https://api.openai.com/v1/chat/completions", {
-    model: "gpt-4o-mini",
-    messages: [{role:"user", content: prompt}]
-  },{
-    headers: {
-      Authorization: `Bearer ${process.env.OPENAI_API_KEY}`
-    }
-  });
+  try {
+    const res = await axios.post(
+      "https://api.groq.com/openai/v1/chat/completions",
+      {
+        model: "llama3-70b-8192",
+        messages: [{ role: "user", content: prompt }]
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.GROQ_API_KEY}`,
+          "Content-Type": "application/json"
+        }
+      }
+    );
 
-  let content = res.data.choices[0].message.content;
-  try { return JSON.parse(content); }
-  catch { return { raw: content }; }
+    const content = res.data.choices[0].message.content;
+
+    try {
+      return JSON.parse(content);
+    } catch {
+      return { raw: content };
+    }
+
+  } catch (error) {
+    console.error("Groq Error:", error.response?.data || error.message);
+    throw error;
+  }
 }
 
 app.post("/api/generate", async (req,res)=>{
