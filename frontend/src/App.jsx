@@ -8,7 +8,7 @@ export default function App(){
   const [history,setHistory] = useState([]);
   const [loading,setLoading] = useState(false);
 
-  const API = "http://localhost:5000";
+  const API = "https://ai-event-concierge-pro.onrender.com";
 
   const fetchHistory = async ()=>{
     const res = await axios.get(API+"/api/history");
